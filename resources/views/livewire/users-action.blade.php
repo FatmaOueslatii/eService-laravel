@@ -1,4 +1,4 @@
-<div class="space-y-4 bg-gradient-to-r from-indigo-300 to-purple-400">
+<div class="space-y-4 ">
     <!-- Barre de recherche et actions -->
     <div class="flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0 sm:space-x-4">
         <!-- Recherche -->

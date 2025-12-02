@@ -9,6 +9,8 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Traits\HasRoles;
 
@@ -22,7 +24,7 @@ class User extends Authenticatable
     use HasProfilePhoto;
     use Notifiable;
     use TwoFactorAuthenticatable;
-
+    use LogsActivity;
     /**
      * The attributes that are mass assignable.
      *
@@ -86,6 +88,26 @@ class User extends Authenticatable
         $role = Role::where('name', $roleName)->first();
 
         return $role->label ?? $roleName;
+    }
+
+    protected static $logAttributes = ['name', 'email', 'roles']; // ajoute ce que tu veux suivre
+    protected static $logName = 'user';
+    protected static $logOnlyDirty = true; // pour ne logguer que les changements
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['name', 'email'])
+            ->logOnlyDirty()
+            ->useLogName('user')
+            ->dontSubmitEmptyLogs();
+        // delete sera logué MANUELLEMENT dans le controller
+    }
+
+    // Relation pour récupérer les activités liées à cet utilisateur
+    public function activities()
+    {
+        return $this->morphMany(\Spatie\Activitylog\Models\Activity::class, 'subject');
     }
 
 }

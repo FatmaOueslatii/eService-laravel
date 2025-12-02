@@ -5,7 +5,6 @@ namespace App\Livewire;
 use App\Models\User;
 use Livewire\Component;
 use Livewire\WithPagination;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Spatie\Permission\Models\Role;
@@ -23,6 +22,10 @@ class UsersAction extends Component
 
     public Collection $roles;
 
+    public $sortField = 'created_at';
+    public $sortDirection = 'desc';
+
+
     public function mount(): void
     {
         // Liste des rôles Spatie
@@ -30,40 +33,60 @@ class UsersAction extends Component
     }
 
     // Export PDF
-    public function exportPdf()
+//    public function exportPdf()
+//    {
+//        try {
+//            $users = User::with('roles')
+//                ->when($this->search !== '', function (Builder $query) {
+//                    $query->where(function ($q) {
+//                        $q->where('name', 'like', '%' . $this->search . '%')
+//                            ->orWhere('email', 'like', '%' . $this->search . '%');
+//                    });
+//                })
+//                ->when($this->searchRole !== '', fn($query)
+//                    => $query->role($this->searchRole))
+//
+//                ->get();
+//
+//            $pdf = Pdf::loadView('pdf.users', ['users' => $users]);
+//
+//            $this->dispatch('show-toast', [
+//                'message' => 'Téléchargement PDF...',
+//                'type' => 'success',
+//            ]);
+//
+//            return response()->streamDownload(function () use ($pdf) {
+//                echo $pdf->output();
+//            }, 'users_list.pdf');
+//
+//        } catch (\Throwable $e) {
+//            $this->dispatch('show-toast', [
+//                'message' => 'Erreur PDF ❌',
+//                'type' => 'error',
+//            ]);
+//        }
+//    }
+//    public function exportExcel()
+//    {
+    public function exportExcel()
     {
-        try {
-            $users = User::with('roles')
-                ->when($this->search !== '', function (Builder $query) {
-                    $query->where(function ($q) {
-                        $q->where('name', 'like', '%' . $this->search . '%')
-                            ->orWhere('email', 'like', '%' . $this->search . '%');
-                    });
-                })
-                ->when($this->searchRole !== '', fn($query)
-                    => $query->role($this->searchRole))
-
-                ->get();
-
-            $pdf = Pdf::loadView('pdf.users', ['users' => $users]);
-
-            $this->dispatch('show-toast', [
-                'message' => 'Téléchargement PDF...',
-                'type' => 'success',
-            ]);
-
-            return response()->streamDownload(function () use ($pdf) {
-                echo $pdf->output();
-            }, 'users_list.pdf');
-
-        } catch (\Throwable $e) {
-            $this->dispatch('show-toast', [
-                'message' => 'Erreur PDF ❌',
-                'type' => 'error',
-            ]);
-        }
+        return redirect()->route('admin.users.excel', [
+            'search' => $this->search,
+            'searchRole' => $this->searchRole,
+            'sortField' => $this->sortField,
+            'sortDirection' => $this->sortDirection,
+        ]);
     }
 
+    public function exportPdf()
+    {
+        return redirect()->route('admin.users.pdf', [
+            'search' => $this->search,
+            'searchRole' => $this->searchRole,
+            'sortField' => $this->sortField,
+            'sortDirection' => $this->sortDirection,
+        ]);
+    }
     public function showUser($id)
     {
         $this->selectedUser = User::with('roles')->findOrFail($id);

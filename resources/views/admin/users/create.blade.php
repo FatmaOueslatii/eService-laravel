@@ -57,14 +57,15 @@
                     <!-- Rôle -->
                     <div class="mb-4">
                         <label class="block text-gray-700 font-semibold mb-2">Rôle</label>
-                        <select name="role_id" class="w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-indigo-200 focus:border-indigo-500" required>
+                        <select name="role" class="w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-indigo-200 focus:border-indigo-500" required>
                             <option value="">-- Sélectionner un rôle --</option>
                             @foreach($roles as $role)
-                                <option value="{{ $role->id }}" {{ old('role_id') == $role->id ? 'selected' : '' }}>
+                                <option value="{{ $role->name }}" {{ old('role') == $role->name ? 'selected' : '' }}>
                                     {{ $role->label }}
                                 </option>
                             @endforeach
                         </select>
+
                     </div>
 
                     <!-- Bouton -->
